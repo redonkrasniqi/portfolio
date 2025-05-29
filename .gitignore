@@ -1,0 +1,48 @@
+# Node modules and build artifacts
+node_modules/
+dist/
+build/
+.vite/
+.pnpm-debug.log
+pnpm-lock.yaml
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# IDEs
+.vscode/
+.idea/
+*.sw?
+
+# Logs
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# TypeScript
+*.tsbuildinfo
+
+# Go build files
+/server/bin/
+/server/pkg/
+*.exe
+*.out
+*.test
+
+# Dependency caches
+client/.next/
+client/.turbo/
+client/.cache/
+
+# Misc
+coverage/
+docs/.DS_Store
