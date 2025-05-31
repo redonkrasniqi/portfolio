@@ -1,32 +1,40 @@
-import { Box, HStack, Link, Text } from "@chakra-ui/react";
+import { Box, HStack, Link, Text, Icon } from '@chakra-ui/react';
+import { type IconType } from 'react-icons';
+import { footerNavLinks, type NavLink } from '../types/navigation';
+import { useAppTheme } from '../hooks/useAppTheme';
 
-/**
- * Footer sits at the bottom of every page, providing navigation and metadata.
- */
 export default function Footer() {
     const currentYear = new Date().getFullYear();
+    const { colors } = useAppTheme();
+    const { bg, textColor, border } = colors;
 
     return (
         <Box
             as="footer"
             py={4}
-            bg="gray.100"
+            bg={bg}
             borderTop="1px"
-            borderColor="gray.200"
+            borderColor={border}
         >
-            <HStack justify="center" spacing={6}>
-                <Link href="#">Home</Link>
-                <Link href="#projects">Projects</Link>
-                <Link href="#contact">Contact</Link>
-                <Link
-                    href="https://github.com/redonkrasniqi/portfolio"
-                    isExternal
-                >
-                    GitHub
-                </Link>
+            <HStack justify="center" spacing={6} mb={4}>
+                {footerNavLinks.map((link: NavLink) => (
+                    <Link
+                        key={link.href + link.label}
+                        href={link.href}
+                        isExternal={link.external}
+                        rel={link.external ? link.rel : undefined}
+                        color={textColor}
+                    >
+                        {link.icon && (
+                            <Icon as={link.icon as IconType} boxSize={6} mr={link.label ? 2 : 0} />
+                        )}
+                        {link.label}
+                    </Link>
+                ))}
             </HStack>
-            <Text textAlign="center" fontSize="sm" mt={2}>
-                © {currentYear} Redon Krasniqi
+
+            <Text textAlign="center" fontSize="sm">
+                © {currentYear} Redon Krasniqi.
             </Text>
         </Box>
     );

@@ -1,10 +1,12 @@
-import { HStack, Link, Icon, useColorModeValue } from "@chakra-ui/react";
+import { HStack, Link, Icon } from "@chakra-ui/react";
 import { type IconType } from "react-icons";
 import ColorModeToggle from "../ColorModeToggle";
 import { type NavLink, navLinks } from "../../types/navigation";
+import { useAppTheme } from "../../hooks/useAppTheme";
 
 export default function DesktopNav() {
-    const textColor = useColorModeValue("gray.800", "white");
+    const { colors } = useAppTheme();
+    const { textColor } = colors;
 
     return (
         <HStack spacing={6} display={{ base: "none", md: "flex" }}>

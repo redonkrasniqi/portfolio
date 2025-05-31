@@ -1,17 +1,13 @@
-import {
-    Flex,
-    Box,
-    IconButton,
-    Code,
-    useColorModeValue,
-    useDisclosure,
-} from "@chakra-ui/react";
+import { Flex, Box, IconButton, useDisclosure } from "@chakra-ui/react";
 import { HamburgerIcon } from "@chakra-ui/icons";
-import { DesktopNav, MobileNav } from "../components/Navbar";
+import { DesktopNav, MobileNav, NameBlock } from "../components/Navbar";
 import theme from "../theme";
+import { useAppTheme } from "../hooks/useAppTheme";
 
 export default function Navbar() {
-    const bgColor = useColorModeValue(theme.colors.white, theme.colors.gray[800]);
+    const { colors } = useAppTheme();
+    const { bg } = colors;
+
     const { isOpen, onOpen, onClose } = useDisclosure();
 
     return (
@@ -23,14 +19,14 @@ export default function Navbar() {
                 align="center"
                 px={{ base: theme.space[4], md: theme.space[8], lg: theme.space[16] }}
                 py={theme.space[4]}
-                bg={bgColor}
+                bg={bg}
                 boxShadow="sm"
                 position="sticky"
                 top={0}
                 zIndex={1000}
             >
                 <Box fontWeight="bold" fontSize={{ base: "lg", md: "xl" }}>
-                    <Code fontSize={{ base: "xl", md: "2xl" }}>{`<RedonKrasniqi />`}</Code>
+                    <NameBlock />
                 </Box>
 
                 <DesktopNav />

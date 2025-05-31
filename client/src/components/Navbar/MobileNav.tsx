@@ -9,11 +9,12 @@ import {
     Link,
     Icon,
     Divider,
-    useColorModeValue,
 } from "@chakra-ui/react";
 import { type IconType } from "react-icons";
 import ColorModeToggle from "../ColorModeToggle";
 import { type NavLink, navLinks } from "../../types/navigation";
+import NameBlock from "./NameBlock";
+import { useAppTheme } from "../../hooks/useAppTheme";
 
 interface MobileNavProps {
     isOpen: boolean;
@@ -21,16 +22,16 @@ interface MobileNavProps {
 }
 
 export default function MobileNav({ isOpen, onClose }: MobileNavProps) {
-    const bgColor = useColorModeValue("white", "gray.800");
-    const dividerColor = useColorModeValue("gray.300", "gray.600");
+    const { colors } = useAppTheme();
+    const { bg, divider } = colors;
 
     return (
         <Drawer placement="top" size="xs" isOpen={isOpen} onClose={onClose}>
             <DrawerOverlay />
-            <DrawerContent bg={bgColor}>
+            <DrawerContent bg={bg}>
                 <DrawerCloseButton />
                 <DrawerHeader display="flex" justifyContent="center" px={0} py={6}>
-                    &lt;RedonKrasniqi /&gt;
+                    <NameBlock />
                 </DrawerHeader>
 
                 <DrawerBody
@@ -55,7 +56,7 @@ export default function MobileNav({ isOpen, onClose }: MobileNavProps) {
                             </Link>
                         ))}
 
-                        <Divider borderColor={dividerColor} w="100%" />
+                        <Divider borderColor={divider} w="100%" />
 
                         <ColorModeToggle
                             variant="full"

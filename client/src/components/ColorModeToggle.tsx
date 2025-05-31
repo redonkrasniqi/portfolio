@@ -3,11 +3,11 @@ import {
     Button,
     IconButton,
     useColorMode,
-    useColorModeValue,
     type ButtonProps,
     type IconButtonProps,
 } from '@chakra-ui/react';
 import { SunIcon, MoonIcon } from '@chakra-ui/icons';
+import { useAppTheme } from '../hooks/useAppTheme';
 
 export type ColorModeToggleProps = {
     variant?: 'icon' | 'full';
@@ -19,8 +19,8 @@ const ColorModeToggle: React.FC<ColorModeToggleProps> = ({
     ...props
 }) => {
     const { colorMode, toggleColorMode } = useColorMode();
-    const bg = useColorModeValue('gray.100', 'gray.700');
-    const hoverBg = useColorModeValue('gray.200', 'gray.600');
+    const { colors } = useAppTheme();
+    const { modeBg, modeHoverBg } = colors;
     const icon = colorMode === 'light' ? <MoonIcon /> : <SunIcon />;
 
     if (variant === 'full') {
@@ -28,8 +28,8 @@ const ColorModeToggle: React.FC<ColorModeToggleProps> = ({
             <Button
                 leftIcon={icon}
                 onClick={toggleColorMode}
-                bg={bg}
-                _hover={{ bg: hoverBg }}
+                bg={modeBg}
+                _hover={{ bg: modeHoverBg }}
                 w="full"
                 maxW="150px"
                 {...props}
@@ -44,8 +44,8 @@ const ColorModeToggle: React.FC<ColorModeToggleProps> = ({
             aria-label="Toggle color mode"
             icon={icon}
             onClick={toggleColorMode}
-            bg={bg}
-            _hover={{ bg: hoverBg }}
+            bg={modeBg}
+            _hover={{ bg: modeHoverBg }}
             {...props}
         />
     );
