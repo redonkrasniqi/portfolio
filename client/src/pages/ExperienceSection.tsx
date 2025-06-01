@@ -15,8 +15,8 @@ export default function ExperienceSection() {
     const isVertical = orientation === "vertical";
 
     return (
-        <Box id="experience" minH="100vh" w="100%" bg={bg}>
-            <Container maxW="1200px" px={{ base: 4, md: 8 }} py={16}>
+        <Box id="experience" py={{ base: 12, md: 16 }} w="100%" bg={bg}>
+            <Container maxW="none" px={{ base: 4, md: 8 }} w={{ base: "90%", md: "80%" }} py={16}>
                 <Heading
                     as="h2"
                     size="lg"

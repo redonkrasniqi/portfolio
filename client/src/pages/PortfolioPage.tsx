@@ -7,7 +7,7 @@ import ContactSection from "./ContactSection";
 
 export default function PortfolioPage() {
     return (
-        <Box w="100vw" overflowX="hidden">
+        <Box w="100%" overflowX="hidden">
             <VStack spacing={16} align="stretch">
                 <MainSection />
                 <AboutSection />

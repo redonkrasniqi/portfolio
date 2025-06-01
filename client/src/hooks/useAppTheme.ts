@@ -6,6 +6,7 @@ export function useAppTheme() {
 
     const colors = {
         /* backgrounds */
+        fullBg: useColorModeValue(brand["75"], brand["950"]),
         bg: useColorModeValue(brand["50"], brand["900"]),
         cardBg: useColorModeValue(brand["100"], brand["700"]),
         inputBg: useColorModeValue(brand["100"], brand["700"]),

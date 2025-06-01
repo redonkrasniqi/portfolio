@@ -1,4 +1,4 @@
-import { Box, Container, Flex, VStack, Text, Heading, Button } from "@chakra-ui/react";
+import { Box, Container, Flex, VStack, HStack, Text, Heading, Button } from "@chakra-ui/react";
 import { useAppTheme } from "../hooks/useAppTheme";
 import CyclingAvatar from "../components/CyclingAvatar";
 import { avatarPhotos } from "../types/avatarPhotos";
@@ -10,14 +10,15 @@ export default function MainSection() {
     return (
         <Box
             id="main"
-            minH="100vh"
             w="100%"
+            h="100%"
             bg={bg}
             display="flex"
             alignItems="center"
             justifyContent="center"
+            py={{ base: 12, md: 16 }}
         >
-            <Container maxW="1200px" px={{ base: 4, md: 8 }}>
+            <Container maxW="none" w={{ base: "90%", md: "80%" }} px={{ base: 4, md: 8 }}>
                 <Flex
                     direction={{ base: "column", md: "row" }}
                     align="center"
@@ -76,16 +77,29 @@ export default function MainSection() {
                             people can focus on what matters most.
                         </Text>
 
-                        <Button
-                            as="a"
-                            href="#projects"
-                            size="lg"
-                            bg={btnBg}
-                            color={btnColor}
-                            _hover={{ bg: btnHoverBg }}
-                        >
-                            View My Work
-                        </Button>
+                        <HStack spacing={4} pt={4}>
+                            <Button
+                                as="a"
+                                href="#projects"
+                                size="lg"
+                                bg={btnBg}
+                                color={btnColor}
+                                _hover={{ bg: btnHoverBg }}
+                            >
+                                Find My Work
+                            </Button>
+                            <Button
+                                as="a"
+                                href="#contact"
+                                size="lg"
+                                bg="transparent"
+                                border={`2px solid ${taglineColor}`}
+                                color={taglineColor}
+                                _hover={{ bg: { taglineColor }, color: { bg } }}
+                            >
+                                Get In Touch
+                            </Button>
+                        </HStack>
                     </VStack>
 
                     <CyclingAvatar

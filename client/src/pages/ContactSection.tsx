@@ -8,14 +8,14 @@ export default function ContactSection() {
     return (
         <Box
             id="contact"
-            minH="100vh"
-            w="100%"
+            py={{ base: 12, md: 16 }}
+            // w="100%"
             bg={bg}
             display="flex"
             alignItems="center"
             justifyContent="center"
         >
-            <Container maxW="600px" px={{ base: 4, md: 8 }} py={16}>
+            <Container maxW="600px" w={{ base: "90%", md: "80%" }} px={{ base: 4, md: 8 }} py={16}>
                 <VStack spacing={6} w="100%">
                     <Heading as="h2" size="xl" color={textColor} mb={4}>
                         Let's Work Together

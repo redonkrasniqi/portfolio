@@ -6,7 +6,7 @@ import { useAppTheme } from "../hooks/useAppTheme";
 
 export default function Navbar() {
     const { colors } = useAppTheme();
-    const { bg } = colors;
+    const { bg, fullBg } = colors;
 
     const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -24,6 +24,8 @@ export default function Navbar() {
                 position="sticky"
                 top={0}
                 zIndex={1000}
+                h="64px"
+                borderBottom={`3px solid ${fullBg}`}
             >
                 <Box fontWeight="bold" fontSize={{ base: "lg", md: "xl" }}>
                     <NameBlock />

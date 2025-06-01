@@ -9,13 +9,13 @@ export default function AboutSection() {
     return (
         <Box
             id="about"
-            minH="100vh"
             w="100%"
             bg={bg}
             display="flex"
             alignItems="center"
+            py={{ base: 12, md: 16 }}
         >
-            <Container maxW="1200px" px={{ base: 4, md: 8 }}>
+            <Container maxW="none" w={{ base: "90%", md: "80%" }} px={{ base: 4, md: 8 }}>
                 <Flex
                     direction={{ base: "column", md: "row" }}
                     align="flex-start"

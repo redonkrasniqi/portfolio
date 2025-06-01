@@ -9,8 +9,8 @@ export default function ProjectsSection() {
     const { bg, taglineColor, textColor } = colors;
 
     return (
-        <Box id="projects" minH="100vh" w="100%" bg={bg}>
-            <Container maxW="1200px" px={{ base: 4, md: 8 }} py={16}>
+        <Box id="projects" py={{ base: 12, md: 16 }} w="100%" bg={bg}>
+            <Container w={{ base: "90%", md: "80%" }} maxW="none" px={{ base: 4, md: 8 }} py={16}>
                 <Heading
                     size="lg"
                     mb={14}
