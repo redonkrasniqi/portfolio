@@ -1,9 +1,9 @@
-import { Box, Heading, VStack, FormControl, FormLabel, Input, Textarea, Button } from "@chakra-ui/react";
+import { Box, Container, Heading, VStack, FormControl, FormLabel, Input, Textarea, Button } from "@chakra-ui/react";
 import { useAppTheme } from "../hooks/useAppTheme";
 
 export default function ContactSection() {
     const { colors } = useAppTheme();
-    const { bg, border, textColor, taglineColor, btnColor, btnBg, btnHoverBg } = colors;
+    const { bg, border, textColor, taglineColor, btnColor, btnBg, btnHoverBg, inputBg } = colors;
 
     return (
         <Box
@@ -14,55 +14,64 @@ export default function ContactSection() {
             display="flex"
             alignItems="center"
             justifyContent="center"
-            px={4}
         >
-            <VStack spacing={6} maxW="600px" w="100%">
-                <Heading as="h2" size="xl" color={textColor}>
-                    Contact Me
-                </Heading>
+            <Container maxW="600px" px={{ base: 4, md: 8 }} py={16}>
+                <VStack spacing={6} w="100%">
+                    <Heading as="h2" size="xl" color={textColor} mb={4}>
+                        Let's Work Together
+                    </Heading>
+                    <FormControl id="name">
+                        <FormLabel color={taglineColor}>Name</FormLabel>
+                        <Input
+                            placeholder="Your name"
+                            bg={inputBg}
+                            borderColor={border}
+                            color={textColor}
+                            _placeholder={{ color: taglineColor }}
+                            _focus={{ borderColor: taglineColor }}
+                            borderRadius="md"
+                        />
+                    </FormControl>
 
-                <FormControl id="name">
-                    <FormLabel color={taglineColor}>Name</FormLabel>
-                    <Input
-                        placeholder="Your name"
-                        bg={bg}
-                        borderColor={border}
-                        _placeholder={{ color: textColor }}
-                    />
-                </FormControl>
+                    <FormControl id="email">
+                        <FormLabel color={taglineColor}>Email</FormLabel>
+                        <Input
+                            type="email"
+                            placeholder="you@example.com"
+                            bg={inputBg}
+                            borderColor={border}
+                            color={textColor}
+                            _placeholder={{ color: taglineColor }}
+                            _focus={{ borderColor: taglineColor }}
+                            borderRadius="md"
+                        />
+                    </FormControl>
 
-                <FormControl id="email">
-                    <FormLabel color={taglineColor}>Email</FormLabel>
-                    <Input
-                        type="email"
-                        placeholder="you@example.com"
-                        bg={bg}
-                        borderColor={border}
-                        _placeholder={{ color: textColor }}
-                    />
-                </FormControl>
+                    <FormControl id="message">
+                        <FormLabel color={taglineColor}>Message</FormLabel>
+                        <Textarea
+                            placeholder="Let’s connect…"
+                            rows={6}
+                            bg={inputBg}
+                            borderColor={border}
+                            color={textColor}
+                            _placeholder={{ color: taglineColor }}
+                            _focus={{ borderColor: taglineColor }}
+                            borderRadius="md"
+                        />
+                    </FormControl>
 
-                <FormControl id="message">
-                    <FormLabel color={taglineColor}>Message</FormLabel>
-                    <Textarea
-                        placeholder="Let’s connect…"
-                        rows={6}
-                        bg={bg}
-                        borderColor={border}
-                        _placeholder={{ color: textColor }}
-                    />
-                </FormControl>
-
-                <Button
-                    colorScheme="teal"
-                    bg={btnBg}
-                    color={btnColor}
-                    _hover={{ bg: btnHoverBg }}
-                    size="md"
-                >
-                    Send Message
-                </Button>
-            </VStack>
+                    <Button
+                        bg={btnBg}
+                        color={btnColor}
+                        _hover={{ bg: btnHoverBg }}
+                        size="lg"
+                        w="100%"
+                    >
+                        Send Message
+                    </Button>
+                </VStack>
+            </Container>
         </Box>
     );
 }

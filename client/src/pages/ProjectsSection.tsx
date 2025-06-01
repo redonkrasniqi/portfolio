@@ -1,55 +1,44 @@
-import { Box, Heading, SimpleGrid, Link, Text, Image, VStack } from "@chakra-ui/react";
+import { Box, Container, Heading, Text, VStack } from "@chakra-ui/react";
+import { projects } from "../types/projects";
+import ProjectCard from "../components/ProjectCard";
+import ExtraProjects from "../features/ExtraProjects";
 import { useAppTheme } from "../hooks/useAppTheme";
 
 export default function ProjectsSection() {
     const { colors } = useAppTheme();
-    const { bg, textColor, border } = colors;
+    const { bg, taglineColor, textColor } = colors;
 
     return (
-        <Box
-            id="projects"
-            minH="100vh"
-            w="100%"
-            bg={bg}
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-            px={4}
-        >
-            <VStack spacing={6} maxW="1000px" align="stretch">
-                <Heading as="h2" size="xl" color={textColor} textAlign="center">
-                    Projects
+        <Box id="projects" minH="100vh" w="100%" bg={bg}>
+            <Container maxW="1200px" px={{ base: 4, md: 8 }} py={16}>
+                <Heading
+                    size="lg"
+                    mb={14}
+                    display="flex"
+                    alignItems="center"
+                    gap={3}
+                    color={textColor}
+                >
+                    <Text as="span" fontWeight="bold">
+                        03.
+                    </Text>
+                    Some Things I’ve Built
+                    <Box
+                        flex="1"
+                        h="1px"
+                        bg={taglineColor}
+                        display={{ base: "none", md: "block" }}
+                    />
                 </Heading>
 
-                <SimpleGrid columns={{ base: 1, md: 2 }} spacing={6}>
-                    <VStack
-                        align="start"
-                        p={4}
-                        border="1px"
-                        borderColor={border}
-                        borderRadius="md"
-                        spacing={3}
-                        bg={bg}
-                    >
-                        <Image
-                            src="/images/project-one.png"
-                            alt="Project One Screenshot"
-                            borderRadius="md"
-                        />
-                        <Heading as="h3" size="md" color={textColor}>
-                            Dairy Cow Behavior Monitor
-                        </Heading>
-                        <Text fontSize="sm" color={textColor}>
-                            Real‐time cow posture &amp; rumination detection on Jetson Nano using
-                            YOLOv5 and DeepSORT.
-                        </Text>
-                        <Link href="https://github.com/redonkrasniqi/cow-monitor" color={textColor} isExternal>
-                            View on GitHub
-                        </Link>
-                    </VStack>
+                <VStack align="stretch" mb={12}>
+                    {projects.map((proj, idx) => (
+                        <ProjectCard key={proj.title} project={proj} idx={idx} />
+                    ))}
+                </VStack>
 
-                </SimpleGrid>
-            </VStack>
+                <ExtraProjects />
+            </Container>
         </Box>
     );
 }

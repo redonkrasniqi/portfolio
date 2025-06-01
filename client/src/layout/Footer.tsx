@@ -10,6 +10,7 @@ export default function Footer() {
 
     return (
         <Box
+            w="100%"
             as="footer"
             py={4}
             bg={bg}

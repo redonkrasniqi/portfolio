@@ -14,7 +14,7 @@ export default function Navbar() {
         <>
             <Flex
                 as="nav"
-                w="100vw"
+                w="100%"
                 justify="space-between"
                 align="center"
                 px={{ base: theme.space[4], md: theme.space[8], lg: theme.space[16] }}
