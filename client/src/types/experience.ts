@@ -1,5 +1,5 @@
 import { type ElementType } from "react";
-import { SiChakraui, SiGraphql, SiPrisma, SiPostgresql } from "react-icons/si";
+import { SiChakraui, SiGraphql, SiPrisma, SiPostgresql, SiReact, SiNodedotjs, SiTypescript, SiGo, SiAntdesign } from "react-icons/si";
 
 export interface Experience {
     /** Company name (used in the left-hand list) */
@@ -18,26 +18,19 @@ export interface Experience {
 
 export const experiences: Experience[] = [
     {
-        company: "Healthcare Platform",
-        role: "Junior Full-Stack Engineer",
-        period: "Mar 2025 – Present",
-        companyUrl: "https://example-health.com",
-        bullets: [
-            "Shipped features on a large-scale React + GraphQL platform with Prisma & PostgreSQL.",
-            "Cut critical REST endpoints’ p95 latency by 38 % through query optimisation & batching.",
-            "Authored automated DB-migration scripts and improved CI build time by ~30 %.",
-            "Championed end-to-end tracing with OpenTelemetry, boosting debuggability across teams.",
+        company: "91 Life",
+        role: "Full-Stack Engineer",
+        period: "June 2024 – Present",
+        companyUrl: "https://91.life",
+        "bullets": [
+            "Collaborated with UX designers and product owners to implement reusable React components and dynamic dashboards, leveraging Apollo Client for GraphQL data management, integrating tRPC endpoints for seamless backend communication.",
+            "Built responsive clinician and administrator interfaces featuring form validation, real-time GraphQL subscriptions, and cross-browser compatibility.",
+            "Authored and optimized complex GraphQL resolvers and Prisma schemas to model patient, appointment, and clinical data, reinforcing data integrity and row-level security for HIPAA compliance.",
+            "Utilized Prisma and its features for type-safe database communication, managing schema migrations, and building queries; also leveraged raw PostgreSQL queries for complex operations and performance optimization.",
+            "Monitored live features on GCP, quickly identifying issues and delivering fast, reliable fixes to ensure production stability and performance.",
+            "Collaborated with a team distributed across multiple continents and time zones, maintaining clear communication and consistently delivering high-quality work.",
+            "Participated in Agile ceremonies (sprint planning, code reviews, pair programming), driving continuous improvements in code quality, documentation, and team collaboration."
         ],
-        tech: [SiGraphql, SiPrisma, SiPostgresql],
-    },
-    {
-        company: "Construction Products Co.",
-        role: "Software Engineer Intern",
-        period: "Jan 2025 – Mar 2025",
-        bullets: [
-            "Built a stock-management system in Node.js/TypeScript that generates tax / monthly reports.",
-            "Integrated real-time inventory tracking and automated email billing alerts, reducing out-of-stock incidents by 20 %.",
-        ],
-        tech: [SiChakraui],
+        tech: [SiGo, SiTypescript, SiReact, SiNodedotjs, SiPostgresql, SiPrisma, SiGraphql, SiChakraui, SiAntdesign],
     },
 ];

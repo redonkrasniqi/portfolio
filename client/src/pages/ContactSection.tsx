@@ -62,9 +62,9 @@ export default function ContactSection() {
                     </FormControl>
 
                     <Button
-                        bg={btnBg}
-                        color={btnColor}
-                        _hover={{ bg: btnHoverBg }}
+                        bg={border}
+                        color="white"
+                        _hover={{ bg: "white", color: border }}
                         size="lg"
                         w="100%"
                     >

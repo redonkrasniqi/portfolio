@@ -5,7 +5,7 @@ import { experiences } from "../types/experience";
 
 export default function ExperienceSection() {
     const { colors } = useAppTheme();
-    const { bg, textColor, taglineColor, divider } = colors;
+    const { bg, textColor, taglineColor, divider, border } = colors;
     const [tabIndex, setTabIndex] = useState(0);
 
     const orientation = useBreakpointValue(
@@ -16,7 +16,12 @@ export default function ExperienceSection() {
 
     return (
         <Box id="experience" py={{ base: 12, md: 16 }} w="100%" bg={bg}>
-            <Container maxW="none" px={{ base: 4, md: 8 }} w={{ base: "90%", md: "80%" }} py={16}>
+            <Container
+                maxW="none"
+                px={{ base: 4, md: 8 }}
+                w={{ base: "90%", md: "80%" }}
+                py={16}
+            >
                 <Heading
                     as="h2"
                     size="lg"
@@ -52,11 +57,14 @@ export default function ExperienceSection() {
                         <TabList
                             borderLeft={isVertical ? `1px solid ${divider}` : undefined}
                             borderBottom={!isVertical ? `1px solid ${divider}` : undefined}
+                            h={isVertical ? "100px" : undefined}
                             overflowY={isVertical ? "auto" : undefined}
                             overflowX={!isVertical ? "auto" : undefined}
                             whiteSpace={!isVertical ? "nowrap" : undefined}
                             minW={isVertical ? { base: "140px", md: "180px" } : "100%"}
-                            maxH={isVertical ? "70vh" : undefined}
+                            borderWidth="3px"
+                            borderColor={border}
+                            borderRadius="10%"
                         >
                             {experiences.map((exp, idx) => (
                                 <Tab
@@ -66,12 +74,16 @@ export default function ExperienceSection() {
                                     py={isVertical ? 2 : 1}
                                     minW={!isVertical ? "120px" : undefined}
                                     flex={!isVertical ? "0 0 auto" : undefined}
-                                    justifyContent={isVertical ? "flex-start" : "center"}
+                                    justifyContent="center"
+                                    textAlign="center"
+                                    fontSize={{ base: "lg", md: "xl" }}
+                                    fontWeight="bold"
                                 >
                                     {exp.company}
                                 </Tab>
                             ))}
                         </TabList>
+
 
                         <TabPanels flex="1">
                             {experiences.map((exp) => (

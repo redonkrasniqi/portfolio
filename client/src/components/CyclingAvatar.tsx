@@ -10,10 +10,10 @@ interface CyclingAvatarProps {
 
 export default function CyclingAvatar({
     photos = avatarPhotos,
-    size = { base: "200px", md: "300px" },
+    size = { base: "250px", md: "350px" },
 }: CyclingAvatarProps) {
     const { colors } = useAppTheme();
-    const { taglineColor } = colors;
+    const { border } = colors;
     const [currentIndex, setCurrentIndex] = useState(0);
     const timeoutRef = useRef<number | null>(null);
 
@@ -46,8 +46,8 @@ export default function CyclingAvatar({
             onClick={handleClick}
             borderRadius="full"
             overflow="hidden"
-            border={`4px solid ${taglineColor}`}
-            boxShadow={`0 0 0 8px ${taglineColor}33`}
+            border={`5px solid ${border}`}
+            boxShadow={`0 0 0 8px ${border}33`}
             w={size}
             h={size}
             position="relative"

@@ -8,7 +8,7 @@ import {
     SiPython,
     SiDocker,
     SiKubernetes,
-    SiMongodb,
+    SiGo,
     SiPostgresql,
 } from "react-icons/si";
 
@@ -36,6 +36,6 @@ export const techStack: TechItem[] = [
     { label: "Python", icon: SiPython },
     { label: "Docker", icon: SiDocker },
     { label: "Kubernetes", icon: SiKubernetes },
-    { label: "MongoDB", icon: SiMongodb },
+    { label: "Go", icon: SiGo },
     { label: "PostgreSQL", icon: SiPostgresql },
 ];

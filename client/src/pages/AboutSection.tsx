@@ -47,17 +47,17 @@ export default function AboutSection() {
 
                         <VStack align="start" spacing={4} color={textColor}>
                             <Text>
-                                I’m Redon, a full-stack engineer and applied-CS student obsessed
-                                with clean, scalable systems and pragmatic performance. I cut my
-                                teeth on web apps in college and recently shipped a real-time
-                                dairy-cow monitoring platform on the Jetson Nano.
+                                I studied applied computer science at Constructor University, focusing on software architecture and real-world problem solving. During my coursework, I designed and implemented a scalable microservice framework that emphasized service discovery and circuit breaking—laying the foundation for my obsession with reliable, maintainable systems.
                             </Text>
                             <Text>
-                                These days I architect maintainable codebases that evolve with
-                                business needs—balancing deep tech knowledge with a “will this
-                                still work tomorrow?” mindset.
+                                Beyond academics, I’ve taken on mentoring roles in student-led coding clubs, helping peers build clean React/TypeScript applications and understand backend concepts. Teaching others reinforced my belief that clear documentation and testing are just as important as writing code.
                             </Text>
-                            <Text>Here are a few technologies I’ve been using lately:</Text>
+                            <Text>
+                                In my spare time, I explore trending GitHub repositories, keep up with technological advancements, and watch documentaries on various topics. My goal is to translate innovative research into practical tools that teams can adopt immediately.
+                            </Text>
+                            <Text>
+                                If you’re interested in collaborating on projects that blend cutting-edge technology with real-world impact—whether it’s improving deployment workflows, building data-driven dashboards, or crafting command-line utilities—let’s connect. I’m always looking to learn, share, and create alongside others.
+                            </Text>
                         </VStack>
 
                         <SimpleGrid columns={{ base: 1, sm: 2, md: 3 }} spacing={3} mt={4}>

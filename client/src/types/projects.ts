@@ -10,23 +10,23 @@ export interface Project {
 
 export const projects: Project[] = [
     {
-        title: "Distributed System Visualizer",
+        title: "Real-Time Dairy Cow Behavior Monitoring Using Deep Learning on Edge Devices",
         tagline: "Featured Project",
         description:
-            "Real-time visualisation for monitoring and analysing distributed systems. Includes interactive node graphs, performance metrics and anomaly-detection tooling.",
-        tech: ["React", "D3.js", "WebSockets", "Node.js"],
-        image: "/images/dsv.png",
-        github: "https://github.com/yourname/dsv",
+            "A deep-learning edge-AI pipeline that detects and tracks dairy cow posture (standing, lying) and rumination in real time. Utilizes YOLOv5 for object detection, DeepSORT for multi-object tracking, and runs on NVIDIA Jetson Nano to log behavior data, generate alerts for health anomalies, and synchronize summaries to a cloud dashboard.",
+        tech: ["Python", "PyTorch", "YOLOv5", "DeepSORT", "NVIDIA Jetson Nano", "Docker"],
+        image: "/ThesisPosterLandscape.png",
+        // github: "https://github.com/redonkrasniqi/",
     },
     {
-        title: "Microservice Framework",
+        title: "Personal Expense Tracker",
         tagline: "Featured Project",
         description:
-            "Lightweight Go framework for deploying microservices with service discovery, load balancing and circuit breaking baked in.",
-        tech: ["Go", "gRPC", "Docker", "Kubernetes"],
-        image: "/images/microframe.png",
-        github: "https://github.com/yourname/microframe",
-    },
+            "A full-stack application to track personal finances: log and categorize transactions, visualize spending trends, and forecast future expenses using predictive analytics. Supports adding, editing, and deleting expenses through an intuitive form and dynamically generates charts to highlight income vs. spending patterns. Integrates predictive models to identify recurring payments and alert users to potential budget overruns.",
+        tech: ["React", "TypeScript", "Node.js", "Prisma", "PostgreSQL"],
+        image: "/PersonalExpenseTracker.png",
+        github: "https://github.com/redonkrasniqi/Personal-Expense-Tracker",
+    }
 ];
 
 export interface ExtraProject {
@@ -39,26 +39,26 @@ export interface ExtraProject {
 
 export const extraProjects: ExtraProject[] = [
     {
-        title: "API Gateway",
+        title: "Healthcare Platform Enhancements",
         description:
-            "A high-performance gateway with built-in authentication, rate-limiting and request transformation.",
-        tech: ["Node.js", "Express", "Redis"],
-        github: "https://github.com/yourname/api-gateway",
+            "Shipped front-end features using React, leveraging GraphQL and tRPC for data fetching and state management; on the back end, developed tRPC API endpoints and implemented Temporal workflows to orchestrate long-running processes.",
+        tech: ["React", "GraphQL", "Prisma", "PostgreSQL", "tRPC", "Temporal"],
         external: undefined,
     },
     {
-        title: "Database Migration Tool",
+        title: "Medical Devices Integration",
         description:
-            "CLI & UI for migrating data between heterogeneous DB engines while preserving integrity.",
-        tech: ["Python", "SQLAlchemy", "PostgreSQL"],
-        github: "https://github.com/yourname/db-migrate",
+            "Built a TypeScript/Node.js service to integrate HL7-based device data from different cardiac devices into our healthcare backend. Parsed and validated incoming HL7 messages, transformed them into our internal GraphQL and tRPC mutations, and ensured data consistency by implementing automated tests and schema validations.",
+        tech: ["Node.js", "TypeScript", "HL7", "GraphQL", "tRPC"],
+        external: undefined,
     },
     {
-        title: "Event Sourcing Framework",
+        title: "Newsletter Back‐end Service",
         description:
-            "A lightweight library for applying event-sourcing patterns in distributed systems.",
-        tech: ["TypeScript", "Kafka", "MongoDB"],
-        github: "https://github.com/yourname/event-sourcing",
+            "Created a back‐end microservice in TypeScript that reads .docx files, converts them to HTML via the mammoth library, and stores the generated HTML in a PostgreSQL database. Designed a simple REST API for uploading and retrieving articles, integrated Prisma as the ORM, and added validation to prevent malformed documents from being saved.",
+        tech: ["TypeScript", "Node.js", "mammoth", "Prisma", "PostgreSQL"],
+        external: undefined,
     },
 ];
+
 

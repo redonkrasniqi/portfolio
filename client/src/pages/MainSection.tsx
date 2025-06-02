@@ -5,7 +5,7 @@ import { avatarPhotos } from "../types/avatarPhotos";
 
 export default function MainSection() {
     const { colors } = useAppTheme();
-    const { bg, introColor, textColor, taglineColor, paragraphColor, btnBg, btnHoverBg, btnColor } = colors;
+    const { bg, introColor, textColor, taglineColor, paragraphColor, border, btnHoverBg } = colors;
 
     return (
         <Box
@@ -29,7 +29,7 @@ export default function MainSection() {
                     <VStack
                         spacing={6}
                         textAlign={{ base: "center", md: "left" }}
-                        maxW={{ base: "100%", md: "600px" }}
+                        maxW={{ base: "100%", md: "900px" }}
                     >
                         <Text
                             fontSize={{ base: "md", md: "lg" }}
@@ -64,27 +64,48 @@ export default function MainSection() {
                         <Text
                             fontSize={{ base: "md", md: "lg" }}
                             color={paragraphColor}
-                            maxW="600px"
+                            maxW="900px"
                             px={{ base: 2, md: 0 }}
                         >
-                            I’m a full-stack engineer who treats every codebase like a
-                            championship playbook—structured, disciplined, and built to win in
-                            overtime. My proudest victory: an edge-AI system that watches dairy
-                            cows in real time to flag early health risks, proving that clean
-                            architecture can protect both uptime and bottom lines. Next up, I’m
-                            bringing that same puzzle-solver’s grit to a healthcare platform
-                            poised to rewrite the industry’s rules—automating the repetitive so
-                            people can focus on what matters most.
+                            Hi, my name is Redon Krasniqi. I solve complex problems with the same discipline I honed over 15 years playing basketball—leading teams on the court, then coaching young players to find their best game. As a member of Atomi, an institute recognizing individuals with extraordinary intelligence, I bring both strategic thinking and relentless curiosity to every codebase.
                         </Text>
+
+                        <Text
+                            fontSize={{ base: "md", md: "lg" }}
+                            color={paragraphColor}
+                            maxW="900px"
+                            px={{ base: 2, md: 0 }}
+                        >
+                            I’m a full-stack engineer who treats architecture like a championship playbook: clean, scalable, and optimized for performance. My proudest victory to date is an edge-AI system that monitors dairy cows in real time—flagging early health risks with a YOLOv5/DeepSORT pipeline running on NVIDIA Jetson Nano hardware. That project proved that elegant, maintainable code can deliver life-changing insights in agriculture.
+                        </Text>
+
+                        <Text
+                            fontSize={{ base: "md", md: "lg" }}
+                            color={paragraphColor}
+                            maxW="900px"
+                            px={{ base: 2, md: 0 }}
+                        >
+                            I’ve also built and shipped features on a large-scale React + GraphQL healthcare platform (Prisma / PostgreSQL), wrote automated DB migrations, and introduced end-to-end tracing with OpenTelemetry. I thrive on automating the repetitive so people can focus on what matters most—whether that’s dev-ops, data pipelines, or clinical workflows.
+                        </Text>
+
+                        <Text
+                            fontSize={{ base: "md", md: "lg" }}
+                            color={paragraphColor}
+                            maxW="900px"
+                            px={{ base: 2, md: 0 }}
+                        >
+                            I’m seeking new opportunities to collaborate on open‐source projects and innovate state-of-the-art solutions. If you’re looking for someone who combines high-IQ problem solving with real-world leadership, let’s connect and build something remarkable together.
+                        </Text>
+
 
                         <HStack spacing={4} pt={4}>
                             <Button
                                 as="a"
                                 href="#projects"
                                 size="lg"
-                                bg={btnBg}
-                                color={btnColor}
-                                _hover={{ bg: btnHoverBg }}
+                                bg={border}
+                                color="white"
+                                _hover={{ bg: "white", color: border }}
                             >
                                 Find My Work
                             </Button>
@@ -92,10 +113,9 @@ export default function MainSection() {
                                 as="a"
                                 href="#contact"
                                 size="lg"
-                                bg="transparent"
-                                border={`2px solid ${taglineColor}`}
-                                color={taglineColor}
-                                _hover={{ bg: { taglineColor }, color: { bg } }}
+                                bg={border}
+                                color="white"
+                                _hover={{ bg: "white", color: border }}
                             >
                                 Get In Touch
                             </Button>
@@ -104,7 +124,7 @@ export default function MainSection() {
 
                     <CyclingAvatar
                         photos={avatarPhotos}
-                        size={{ base: "200px", md: "300px" }}
+                        size={{ base: "300px", md: "400px" }}
                     />
                 </Flex>
             </Container>

@@ -22,8 +22,12 @@ export default function ExtraProjectCard({ project }: Props) {
             role="group"
             transition="all .2s"
             _hover={{ transform: "translateY(-4px)" }}
+            display="flex"
+            flexDirection="column"
+            justifyContent="space-between"
+            h="400px"
         >
-            <HStack justify="space-between" mb={6}>
+            <HStack justify="space-between" mb={4} flexShrink={0}>
                 <FiFolder size="28" color={taglineColor} />
 
                 <HStack spacing={3} opacity={0.8} _groupHover={{ opacity: 1 }}>
@@ -52,12 +56,25 @@ export default function ExtraProjectCard({ project }: Props) {
                 </HStack>
             </HStack>
 
-            <VStack align="start" spacing={3}>
-                <Heading size="sm">{project.title}</Heading>
-                <Text fontSize="sm">{project.description}</Text>
+            <VStack
+                align="start"
+                spacing={2}
+                flex="1"
+                overflowY="auto"
+                mb={4}
+            >
+                <Heading size="sm" noOfLines={1}>
+                    {project.title}
+                </Heading>
+                <Box>
+                    <Text fontSize="sm" whiteSpace="pre-wrap">
+                        {project.description}
+                    </Text>
+                </Box>
             </VStack>
 
-            <HStack wrap="wrap" spacing={2} mt={6}>
+            {/* Tech Tags */}
+            <HStack wrap="wrap" spacing={2} flexShrink={0}>
                 {project.tech.map((t) => (
                     <Tag
                         key={t}

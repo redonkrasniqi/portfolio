@@ -24,7 +24,7 @@ export function useAppTheme() {
         modeBg: useColorModeValue(brand["100"], brand["700"]),
         modeHoverBg: useColorModeValue(brand["200"], brand["600"]),
         divider: useColorModeValue(brand["300"], brand["600"]),
-        border: useColorModeValue(brand["300"], brand["600"]),
+        border: useColorModeValue(brand["1500"], brand["1500"]),
     };
 
     return { theme, colors };

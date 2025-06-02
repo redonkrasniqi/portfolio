@@ -22,7 +22,10 @@ const brandColors = {
     800: "#5b21b6",  // deep indigo/purple (headings or accent text)
     900: "#1a202c",  // rich purple  (secondary accent or mid‐tone text on dark)
     950: "#131A23",  // dark purple
-    1000: "000000"   // black (text)
+    1000: "000000",  // black (text)
+
+    // Teal Color
+    1500: "#319795"
 };
 
 export default {

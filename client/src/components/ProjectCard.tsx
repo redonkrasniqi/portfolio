@@ -1,4 +1,4 @@
-import { Box, Flex, Heading, HStack, IconButton, Image, Link, Tag, Text, useBreakpointValue } from "@chakra-ui/react";
+import { Box, Flex, Heading, HStack, IconButton, Image, Link, Tag, Text, useBreakpointValue, AspectRatio } from "@chakra-ui/react";
 import { FaGithub } from "react-icons/fa";
 import { FiExternalLink } from "react-icons/fi";
 import { type Project } from "../types/projects";
@@ -25,20 +25,21 @@ export default function ProjectCard({ project: p, idx }: Props) {
         >
             <Box
                 flex="1 1 55%"
-                overflow="hidden"
                 borderRadius="lg"
                 shadow="lg"
-                maxH={{ base: "220px", md: "360px" }}
+                overflow="hidden"
+                maxH={{ base: "260px", md: "360px", lg: "auto" }}
+                w="100%"
             >
-                <Image
-                    src={p.image}
-                    alt={p.title}
-                    w="100%"
-                    h="100%"
-                    objectFit="cover"
-                    transition="all .3s"
-                    _hover={{ transform: "scale(1.02)" }}
-                />
+                <AspectRatio ratio={3 / 2} w="100%">
+                    <Image
+                        src={p.image}
+                        alt={p.title}
+                        objectFit="cover"
+                        transition="all .3s"
+                        _hover={{ transform: "scale(1.02)" }}
+                    />
+                </AspectRatio>
             </Box>
 
             <Box
