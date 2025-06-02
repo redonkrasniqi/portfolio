@@ -1,16 +1,28 @@
 package routes
 
 import (
-	"github.com/gofiber/fiber/v2"
-	"go.uber.org/zap"
-
+	"github.com/go-chi/chi/v5"
+	chiMiddleware "github.com/go-chi/chi/v5/middleware"
+	"github.com/redonkrasniqi/portfolio/server/config"
 	"github.com/redonkrasniqi/portfolio/server/handlers"
+	mw "github.com/redonkrasniqi/portfolio/server/middleware"
 )
 
-func Register(app *fiber.App, logger *zap.SugaredLogger) {
-	// Health check
-	app.Get("/health", handlers.HealthCheck)
+func RegisterRoutes(smtpCfg *config.SMTPConfig) *chi.Mux {
+	r := chi.NewRouter()
 
-	// Contact form
-	app.Post("/api/contact", handlers.ContactHandler(logger))
+	r.Use(chiMiddleware.Logger)
+	r.Use(chiMiddleware.Recoverer)
+	r.Use(chiMiddleware.RequestID)
+	r.Use(chiMiddleware.RealIP)
+	r.Use(chiMiddleware.NoCache)
+	r.Use(chiMiddleware.StripSlashes)
+
+	r.Use(mw.CORS)
+
+	r.Get("/health", handlers.HealthHandler)
+
+	r.Post("/contact", handlers.ContactHandler(smtpCfg))
+
+	return r
 }

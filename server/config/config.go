@@ -1,47 +1,38 @@
 package config
 
 import (
-	"log"
+	"fmt"
 	"os"
-
-	"github.com/joho/godotenv"
+	"strconv"
 )
 
-type AppConfig struct {
-	Port            string
-	SMTPHost        string
-	SMTPPort        string
-	SMTPUser        string
-	SMTPPass        string
-	ContactReceiver string
-	AllowedOrigin   string
+type SMTPConfig struct {
+	Host     string
+	Port     int
+	Username string
+	Password string
+	ToEmail  string
 }
 
-var Cfg AppConfig
-
-func Load() {
-	if err := godotenv.Load(); err != nil {
-		log.Println("No .env file found, reading environment variables directly")
+// LoadSMTPConfig reads environment variables and returns an SMTPConfig.
+// You can set env vars e.g.:
+//
+//	SMTP_HOST=smtp.gmail.com
+//	SMTP_PORT=587
+//	SMTP_USER=foo@gmail.com
+//	SMTP_PASS=yourpassword
+//	CONTACT_TO=you@domain.com
+func LoadSMTPConfig() (*SMTPConfig, error) {
+	portInt, err := strconv.Atoi(os.Getenv("SMTP_PORT"))
+	if err != nil {
+		return nil, fmt.Errorf("invalid SMTP_PORT: %w", err)
 	}
 
-	Cfg = AppConfig{
-		Port:            getEnv("PORT", "8080"),
-		SMTPHost:        getEnv("SMTP_HOST", ""),
-		SMTPPort:        getEnv("SMTP_PORT", "587"),
-		SMTPUser:        getEnv("SMTP_USER", ""),
-		SMTPPass:        getEnv("SMTP_PASS", ""),
-		ContactReceiver: getEnv("CONTACT_RECEIVER", ""),
-		AllowedOrigin:   getEnv("ALLOWED_ORIGIN", "http://localhost:3000"),
-	}
-
-	if Cfg.SMTPHost == "" || Cfg.SMTPUser == "" || Cfg.SMTPPass == "" {
-		log.Fatal("Missing required SMTP configuration")
-	}
-}
-
-func getEnv(key, fallback string) string {
-	if val := os.Getenv(key); val != "" {
-		return val
-	}
-	return fallback
+	return &SMTPConfig{
+		Host:     os.Getenv("SMTP_HOST"),
+		Port:     portInt,
+		Username: os.Getenv("SMTP_USER"),
+		Password: os.Getenv("SMTP_PASS"),
+		ToEmail:  os.Getenv("CONTACT_TO"),
+	}, nil
 }

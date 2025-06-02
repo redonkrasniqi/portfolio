@@ -38,7 +38,7 @@ This repository contains the Go backend for your portfolio project. It’s organ
    ```
 
    * The server listens on the port defined by `PORT` (default `8080`).
-   * A health check endpoint is available at `GET /health`.
+   * A health‐check endpoint is available at `GET /health`.
 
 ---
 
@@ -48,22 +48,22 @@ This repository contains the Go backend for your portfolio project. It’s organ
 server/
 ├── cmd/
 │   └── server/
-│       └── main.go
+│       └── main.go           ← loads .env, config, logger → registers routes → starts net/http server
 ├── config/
-│   └── config.go
+│   └── config.go             ← LoadSMTPConfig() reads env vars into a struct
 ├── handlers/
-│   ├── contact.go
-│   └── health.go
+│   ├── contact.go            ← `POST /contact`: parses JSON, validates, calls email service
+│   └── health.go             ← `GET /health`: returns `{"status":"healthy"}`
 ├── middleware/
-│   └── cors.go
+│   └── cors.go               ← very basic CORS policy (allows all origins)
 ├── models/
-│   └── contact.go
+│   └── contact.go            ← `ContactRequest` struct with JSON tags
 ├── routes/
-│   └── routes.go
+│   └── routes.go             ← wires `/health` and `/contact` into a Chi router
 ├── services/
-│   └── email.go
+│   └── email.go              ← `SendContactEmail` via SMTP (go-mail/mail/v2)
 ├── utils/
-│   └── logger.go
+│   └── logger.go             ← constructs a `*zap.SugaredLogger`
 ├── go.mod
 └── go.sum
 ```
@@ -72,53 +72,165 @@ server/
 
 ## Folder Breakdown
 
-* **`cmd/server/main.go`**
+### `cmd/server/main.go`
 
-  * Application entry point.
-  * Loads configuration, initializes the logger, sets up middleware, registers routes, and starts the Fiber server.
+* Application entry point.
+* Calls `godotenv.Load()` to read `.env` (if present).
+* Calls `config.LoadSMTPConfig()` to load SMTP credentials.
+* Creates a SugaredLogger via `utils.NewLogger()`.
+* Registers routes in `routes.RegisterRoutes(logger, smtpCfg)`.
+* Starts an `http.Server` on `:{PORT}` (with default timeouts).
 
-* **`config/`**
+### `config/`
 
-  * `config.go`: Reads environment variables (via `godotenv` or directly) into a global `AppConfig` struct.
-  * Only one place to adjust configuration keys or defaults.
+* `config.go`: Defines `SMTPConfig` and `LoadSMTPConfig()`, which reads:
 
-* **`handlers/`**
+  * `SMTP_HOST`
+  * `SMTP_PORT`
+  * `SMTP_USER`
+  * `SMTP_PASS`
+  * `CONTACT_TO`
+  * `PORT` (fallback to `8080` if unset)
+* Centralizes all environment‐variable logic in one place.
 
-  * Contains HTTP handlers for each endpoint:
+### `handlers/`
 
-    * `health.go`: Simple `GET /health` handler.
-    * `contact.go`: `POST /api/contact` handler that parses request, validates fields, and calls the email service.
+* **`health.go`**:
 
-* **`middleware/`**
+  ```go
+  func HealthHandler(w http.ResponseWriter, r *http.Request) {
+    w.Header().Set("Content-Type", "application/json")
+    w.WriteHeader(http.StatusOK)
+    w.Write([]byte(`{"status":"healthy"}`))
+  }
+  ```
+* **`contact.go`**:
 
-  * `cors.go`: Defines CORS policy (allowed origin, allowed methods, etc.).
-  * You can add other middleware (authentication checks, rate limiting) here.
+  ```go
+  func ContactHandler(smtpCfg *config.SMTPConfig) http.HandlerFunc {
+    return func(w http.ResponseWriter, r *http.Request) {
+      if r.Method != http.MethodPost {
+        http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+        return
+      }
+      var req models.ContactRequest
+      if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+        http.Error(w, `{"error":"invalid JSON payload"}`, http.StatusBadRequest)
+        return
+      }
+      if req.Name == "" || req.Email == "" || req.Message == "" {
+        http.Error(w, `{"error":"name, email, and message are required"}`, http.StatusBadRequest)
+        return
+      }
+      if err := services.SendContactEmail(smtpCfg, &req); err != nil {
+        http.Error(w, `{"error":"failed to send email"}`, http.StatusInternalServerError)
+        return
+      }
+      w.Header().Set("Content-Type", "application/json")
+      w.WriteHeader(http.StatusOK)
+      w.Write([]byte(`{"status":"ok"}`))
+    }
+  }
+  ```
 
-* **`models/`**
+### `middleware/`
 
-  * Payload and data structs shared across handlers and services.
-  * `contact.go` defines the `ContactRequest` type.
+* **`cors.go`**:
 
-* **`routes/`**
+  ```go
+  func CORS(next http.Handler) http.Handler {
+    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+      w.Header().Set("Access-Control-Allow-Origin", "*")
+      w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+      w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+      if r.Method == http.MethodOptions {
+        w.WriteHeader(http.StatusNoContent)
+        return
+      }
+      next.ServeHTTP(w, r)
+    })
+  }
+  ```
+* All cross‐cutting HTTP concerns (CORS, logging, metrics) should live here.
 
-  * `routes.go`: Binds URL paths to handler functions.
-  * Receives dependencies (e.g., logger) and registers routes in a single location.
+### `models/`
 
-* **`services/`**
+* **`contact.go`**:
 
-  * Business logic (e.g., sending emails).
-  * `email.go` reads SMTP configuration, constructs and sends email.
-  * If you swap to a transactional provider later, update only this package.
+  ```go
+  type ContactRequest struct {
+    Name    string `json:"name"`
+    Email   string `json:"email"`
+    Message string `json:"message"`
+  }
+  ```
+* Holds all request/response payload definitions.
 
-* **`utils/`**
+### `routes/`
 
-  * Utility functions and helpers (e.g., structured logger setup).
-  * `logger.go` configures and returns a Zap (or other) logger instance.
+* **`routes.go`**:
 
-* **`go.mod / go.sum`**
+  ```go
+  func RegisterRoutes(smtpCfg *config.SMTPConfig, logger *zap.SugaredLogger) *chi.Mux {
+    r := chi.NewRouter()
+    // Chi’s own middleware
+    r.Use(chiMiddleware.Logger)
+    r.Use(chiMiddleware.Recoverer)
+    r.Use(chiMiddleware.RequestID)
+    r.Use(chiMiddleware.RealIP)
+    r.Use(chiMiddleware.NoCache)
+    r.Use(chiMiddleware.StripSlashes)
+    // Custom CORS
+    r.Use(mw.CORS)
 
-  * Declares module path: `module github.com/redonkrasniqi/portfolio/server`.
-  * Lists dependencies and their versions.
+    r.Get("/health", handlers.HealthHandler)
+    r.Post("/contact", handlers.ContactHandler(smtpCfg))
+    return r
+  }
+  ```
+* Centralizes all route registration in one place.
+* Always pass dependencies (logger, config) into routes instead of globals.
+
+### `services/`
+
+* **`email.go`**:
+
+  ```go
+  func SendContactEmail(cfg *config.SMTPConfig, req *models.ContactRequest) error {
+    m := mail.NewMessage()
+    m.SetHeader("From", cfg.Username)
+    m.SetHeader("To", cfg.ToEmail)
+    m.SetHeader("Reply-To", req.Email)
+    m.SetHeader("Subject", fmt.Sprintf("New contact from %s", req.Name))
+    body := fmt.Sprintf("Name: %s\nEmail: %s\n\n%s", req.Name, req.Email, req.Message)
+    m.SetBody("text/plain", body)
+    d := mail.NewDialer(cfg.Host, cfg.Port, cfg.Username, cfg.Password)
+    return d.DialAndSend(m)
+  }
+  ```
+* Contains all non‐HTTP logic (sending email).
+* Swap out implementation (SMTP, SendGrid API, etc.) here without touching handlers.
+
+### `utils/`
+
+* **`logger.go`**:
+
+  ```go
+  func NewLogger() *zap.SugaredLogger {
+    logger, err := zap.NewProduction()
+    if err != nil {
+      panic(err)
+    }
+    return logger.Sugar()
+  }
+  ```
+* Configures and returns a `*zap.SugaredLogger` for structured logging.
+* Pass this logger into handlers/services to avoid using `fmt.Println`.
+
+### `go.mod / go.sum`
+
+* Declares `module github.com/redonkrasniqi/portfolio/server`.
+* Lists all dependencies (chi, go-mail, zap, godotenv, etc.).
 
 ---
 
@@ -126,104 +238,115 @@ server/
 
 1. **Keep `main.go` minimal**
 
-   * Only load configuration, create the Fiber app, attach global middleware, and call `routes.Register(...)`.
-   * Avoid placing business logic or database code directly in `main.go`.
+   * Only load environment variables, create the logger, register routes, and start the server.
+   * No business logic or database calls in `main.go`.
 
 2. **Add new endpoints by following the same pattern**
 
-   * **Create a new handler** in `handlers/`. Parse and validate input, then invoke a service.
-   * **Update `models/`** with any new request/response types.
-   * **Add business logic** to `services/`. For example, if you need to store data, create a `repository/` package and have a service call it.
-   * **Register the route** in `routes/routes.go` (e.g., `app.Post("/api/your-endpoint", handlers.YourHandler(logger))`).
+   1. **Define request/response types** in `models/`.
+   2. **Create a handler** in `handlers/` that:
 
-3. **Use middleware for cross-cutting concerns**
+      * Parses JSON via `json.NewDecoder(r.Body).Decode(&req)`.
+      * Validates required fields.
+      * Calls a function in `services/` (business logic).
+      * Returns JSON (e.g., `w.Write([]byte(...))`).
+   3. **Register the route** in `routes/routes.go` (e.g., `r.Post("/your-path", handlers.YourHandler(smtpCfg))`).
 
-   * Anything that applies to multiple routes (authentication, logging, CORS) lives in `middleware/`.
-   * In `main.go`, attach these middleware functions before registering routes.
+3. **Use middleware for cross‐cutting concerns**
+
+   * CORS, logging, authentication, rate‐limiting, etc., all live in `middleware/`.
+   * Attach them once in `routes.RegisterRoutes(...)`.
 
 4. **Centralize configuration**
 
-   * Add new environment variables in `config/config.go`.
-   * Access `config.Cfg.YourKey` from anywhere in the app.
+   * Add new environment variables in `config/config.go` and `.env`.
+   * Access via `config.LoadSMTPConfig()` or add new functions for other configs.
 
 5. **Leverage the logger**
 
-   * Import `utils.NewLogger()` in `main.go` and pass the `*zap.SugaredLogger` to handlers or services.
-   * Always use structured logging (`logger.Infof`, `logger.Errorf`) instead of `fmt.Println`.
+   * Call `logger := utils.NewLogger()` in `main.go`.
+   * Pass `logger` into route registration or directly into handlers/services.
+   * Use `logger.Infof()`, `logger.Errorf()`, etc., instead of `fmt.Println`.
 
 6. **Isolation of concerns**
 
-   * **Handlers** handle request/response.
-   * **Services** contain core logic (database calls, external APIs, email).
+   * **Handlers** handle HTTP request/response.
+   * **Services** implement business logic (DB, external APIs, email, etc.).
    * **Models** define data shapes.
-   * This separation makes testing easier: you can write unit tests for services without invoking Fiber.
+   * This separation makes unit testing easier: test services without invoking HTTP stack.
 
 ---
 
 ## Adding New Features
 
-When you’re ready to add a new feature (e.g., a “newsletter subscription” endpoint), follow these steps:
+When you need to add a feature (e.g. “newsletter subscription”), follow these steps:
 
-1. **Define the request/response types**
+1. **Define the request/response type**
 
-   * Edit (or create) a new file in `models/`, e.g. `newsletter.go`:
+   * Create `models/newsletter.go`:
 
      ```go
      package models
 
      type SubscribeRequest struct {
-         Email string `json:"email"`
+       Email string `json:"email"`
      }
      ```
 
-2. **Create a new handler**
+2. **Create a handler**
 
-   * In `handlers/newsletter.go`:
+   * Add `handlers/newsletter.go`:
 
      ```go
      package handlers
 
      import (
-         "github.com/gofiber/fiber/v2"
-         "go.uber.org/zap"
-         "github.com/redonkrasniqi/portfolio/server/models"
-         "github.com/redonkrasniqi/portfolio/server/services"
+       "encoding/json"
+       "net/http"
+
+       "github.com/redonkrasniqi/portfolio/server/config"
+       "github.com/redonkrasniqi/portfolio/server/models"
+       "github.com/redonkrasniqi/portfolio/server/services"
      )
 
-     func SubscribeHandler(logger *zap.SugaredLogger) fiber.Handler {
-         return func(c *fiber.Ctx) error {
-             var req models.SubscribeRequest
-             if err := c.BodyParser(&req); err != nil {
-                 logger.Errorf("Failed to parse: %v", err)
-                 return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid request"})
-             }
-             if req.Email == "" {
-                 return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Email required"})
-             }
-             if err := services.SaveSubscription(req); err != nil {
-                 logger.Errorf("Error saving subscription: %v", err)
-                 return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Could not save"})
-             }
-             return c.Status(fiber.StatusOK).JSON(fiber.Map{"status": "subscribed"})
+     func SubscribeHandler(cfg *config.SMTPConfig) http.HandlerFunc {
+       return func(w http.ResponseWriter, r *http.Request) {
+         if r.Method != http.MethodPost {
+           http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+           return
          }
+         var req models.SubscribeRequest
+         if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+           http.Error(w, `{"error":"invalid JSON"}`, http.StatusBadRequest)
+           return
+         }
+         if req.Email == "" {
+           http.Error(w, `{"error":"email required"}`, http.StatusBadRequest)
+           return
+         }
+         if err := services.SaveSubscription(req); err != nil {
+           http.Error(w, `{"error":"could not save subscription"}`, http.StatusInternalServerError)
+           return
+         }
+         w.Header().Set("Content-Type", "application/json")
+         w.WriteHeader(http.StatusOK)
+         w.Write([]byte(`{"status":"subscribed"}`))
+       }
      }
      ```
 
 3. **Implement service logic**
 
-   * In `services/newsletter.go`:
+   * Add `services/newsletter.go`:
 
      ```go
      package services
 
-     import (
-         "github.com/redonkrasniqi/portfolio/server/models"
-         // add database or email logic here
-     )
+     import "github.com/redonkrasniqi/portfolio/server/models"
 
      func SaveSubscription(req models.SubscribeRequest) error {
-         // e.g., insert into a database or send a confirmation email
-         return nil
+       // For example: insert into a database or send a confirmation email
+       return nil
      }
      ```
 
@@ -232,19 +355,19 @@ When you’re ready to add a new feature (e.g., a “newsletter subscription” 
    * In `routes/routes.go`, add:
 
      ```go
-     app.Post("/api/subscribe", handlers.SubscribeHandler(logger))
+     r.Post("/subscribe", handlers.SubscribeHandler(smtpCfg))
      ```
 
-5. **Update documentation & environment variables (if needed)**
+5. **Update documentation & environment variables**
 
-   * Add any new ENV vars to `.env` and `config/config.go`.
-   * Update this README with instructions for the new endpoint.
+   * If you need new ENV vars, add them to `.env` and `config/config.go`.
+   * Document the new endpoint in this README.
 
 ---
 
 ## Environment Variables
 
-Create a `.env` file in the `server/` directory with at least the following keys:
+Create a `.env` file in the `server/` directory with at least:
 
 ```dotenv
 # Server
@@ -255,73 +378,88 @@ SMTP_HOST=smtp.example.com
 SMTP_PORT=587
 SMTP_USER=you@example.com
 SMTP_PASS=your-smtp-password
-CONTACT_RECEIVER=you@example.com
-
-# CORS
-ALLOWED_ORIGIN=http://localhost:3000
+CONTACT_TO=you@example.com
 ```
 
-* **`PORT`**: Port on which the Fiber server listens.
-* **`SMTP_*`**: Credentials for your SMTP provider (Gmail, Mailgun, etc.).
-* **`CONTACT_RECEIVER`**: The email address where contact form messages should be sent.
-* **`ALLOWED_ORIGIN`**: Frontend origin for CORS (e.g., `http://localhost:3000` or your production domain).
+* `PORT`: Port on which the HTTP server listens (defaults to `8080` if unset).
+* `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`: Credentials for your SMTP provider (Gmail, Mailgun, etc.).
+* `CONTACT_TO`: The email address that receives contact form submissions.
 
-When you run locally, `github.com/joho/godotenv` will load these values. In production, set environment variables directly or via your hosting provider.
+> **Note:** The CORS middleware currently allows all origins (`*`). If you want to restrict to a specific origin (e.g. your React app), update `middleware/cors.go` accordingly and remove the wildcard in this README.
 
 ---
 
 ## Testing & Deployment
 
-1. **Local Testing**
+### Local Testing
 
-   * Use `go test ./services` (once you add tests) to run unit tests for services.
-   * Use Fiber’s integrated testing (`httptest.NewRequest`) to write handler tests.
+* **Unit tests**:
 
-2. **Docker (Optional)**
+  ```bash
+  go test ./config
+  go test ./handlers
+  go test ./middleware
+  go test ./models
+  go test ./services
+  go test ./utils
+  go test ./routes
+  ```
+* **Integration**:
 
-   * Create a `Dockerfile` at the repo root to containerize the server:
-
-     ```dockerfile
-     FROM golang:1.20-alpine AS builder
-     WORKDIR /app
-     COPY . .
-     RUN go mod tidy && go build -o /portfolio-server ./cmd/server
-
-     FROM alpine:latest
-     RUN apk --no-cache add ca-certificates
-     WORKDIR /root/
-     COPY --from=builder /portfolio-server .
-     COPY .env .
-     EXPOSE 8080
-     CMD ["./portfolio-server"]
-     ```
-   * Build and run:
+  1. Run `go run ./cmd/server`.
+  2. In another terminal, run:
 
      ```bash
-     docker build -t portfolio-server .
-     docker run -d -p 8080:8080 --env-file .env portfolio-server
+     curl -i http://localhost:8080/health
+     curl -i -X POST http://localhost:8080/contact \
+       -H "Content-Type: application/json" \
+       -d '{"name":"Alice","email":"alice@example.com","message":"Hello"}'
      ```
+  3. Verify the email arrives (or appears in MailHog if you use a local SMTP server).
 
-3. **Deploying to a VM or Cloud Service**
+### Docker (Optional)
 
-   * Push your code to GitHub (e.g., `github.com/redonkrasniqi/portfolio`).
-   * On your server, clone the repo, configure environment variables, then run:
+Create a `Dockerfile` at `portfolio/server/Dockerfile`:
 
-     ```bash
-     go mod tidy
-     go build -o portfolio-server ./cmd/server
-     ./portfolio-server
-     ```
-   * Use a process manager (e.g., `systemd` or `pm2`) to keep it running, or deploy via Docker if preferred.
+```dockerfile
+FROM golang:1.20-alpine AS builder
+WORKDIR /app
+COPY go.mod go.sum ./
+RUN go mod download
+COPY . .
+RUN go build -o /portfolio-server ./cmd/server
+
+FROM alpine:latest
+RUN apk --no-cache add ca-certificates
+WORKDIR /root/
+COPY --from=builder /portfolio-server .
+COPY .env .
+EXPOSE 8080
+CMD ["./portfolio-server"]
+```
+
+Build and run:
+
+```bash
+docker build -t portfolio-server .
+docker run -d -p 8080:8080 --env-file .env portfolio-server
+```
+
+### Deploying to a VM or Cloud Service
+
+1. Push code to GitHub (e.g. `github.com/redonkrasniqi/portfolio`).
+2. On your server or CI runner, clone the repo, then:
+
+   ```bash
+   cd portfolio/server
+   go mod tidy
+   go build -o portfolio-server ./cmd/server
+   ./portfolio-server
+   ```
+3. Use a process manager (e.g. `systemd`, `supervisord`) or Docker to keep it running.
 
 ---
 
-> **Tip:**
-> As this project grows, you might introduce additional packages (e.g., a `repository/` layer for database interactions, or `jobs/` for background workers). Always follow the same pattern: split by concern, keep `main.go` minimal, and update `routes/` to wire new handlers.
->
-> This structure ensures each piece of logic lives in exactly one place, making code easier to read, test, and maintain.
->
-> Happy coding!
+> **Tip:** As this project grows, you might introduce additional layers (e.g., `repository/` for database interactions, `jobs/` for background tasks). Always keep `main.go` minimal, place business logic in `services/`, and register new routes in `routes/`. This approach ensures each concern lives in exactly one place, making code easier to read, test, and maintain.
 
-```
-```
+Happy coding!

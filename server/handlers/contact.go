@@ -1,30 +1,40 @@
 package handlers
 
 import (
-	"github.com/gofiber/fiber/v2"
-	"go.uber.org/zap"
+	"encoding/json"
+	"net/http"
 
+	"github.com/redonkrasniqi/portfolio/server/config"
 	"github.com/redonkrasniqi/portfolio/server/models"
 	"github.com/redonkrasniqi/portfolio/server/services"
 )
 
-func ContactHandler(logger *zap.SugaredLogger) fiber.Handler {
-	return func(c *fiber.Ctx) error {
+func ContactHandler(smtpCfg *config.SMTPConfig) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost {
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+
 		var req models.ContactRequest
-		if err := c.BodyParser(&req); err != nil {
-			logger.Errorf("Failed to parse contact request: %v", err)
-			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid request body"})
+		decoder := json.NewDecoder(r.Body)
+		if err := decoder.Decode(&req); err != nil {
+			http.Error(w, `{"error":"invalid JSON payload"}`, http.StatusBadRequest)
+			return
 		}
 
 		if req.Name == "" || req.Email == "" || req.Message == "" {
-			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Name, email, and message are required"})
+			http.Error(w, `{"error":"name, email, and message are required"}`, http.StatusBadRequest)
+			return
 		}
 
-		if err := services.SendContactEmail(req); err != nil {
-			logger.Errorf("Failed to send contact email: %v", err)
-			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to send email"})
+		if err := services.SendContactEmail(smtpCfg, &req); err != nil {
+			http.Error(w, `{"error":"failed to send email"}`, http.StatusInternalServerError)
+			return
 		}
 
-		return c.Status(fiber.StatusOK).JSON(fiber.Map{"status": "sent"})
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte(`{"status":"ok"}`))
 	}
 }
